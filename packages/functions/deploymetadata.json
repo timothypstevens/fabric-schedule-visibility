@@ -1,0 +1,178 @@
+{
+  "runtime": "TypeScript",
+  "functionsMetadata": [
+    {
+      "name": "helloWorld",
+      "scriptFile": "src\\function_app.ts",
+      "bindings": [
+        {
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "authLevel": "anonymous",
+          "methods": [
+            "post"
+          ],
+          "route": "helloWorld"
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        }
+      ],
+      "fabricProperties": {
+        "fabricMetadataSchemaVersion": "1.0",
+        "fabricFunctionReturnType": "string",
+        "fabricFunctionParameters": [
+          {
+            "name": "firstName",
+            "dataType": "string",
+            "hasDefaultValue": false
+          },
+          {
+            "name": "lastName",
+            "dataType": "string",
+            "hasDefaultValue": false
+          }
+        ]
+      },
+      "functionCode": "udf.func(\n  'helloWorld',\n  (firstName: string, lastName: string): string =>\n    `Hello ${firstName} ${lastName}!`,\n  []\n)"
+    },
+    {
+      "name": "getLiveWorkspaces",
+      "scriptFile": "src\\function_app.ts",
+      "bindings": [
+        {
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "authLevel": "anonymous",
+          "methods": [
+            "post"
+          ],
+          "route": "getLiveWorkspaces"
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        },
+        {
+          "name": "__generic_Fabric",
+          "direction": "in",
+          "type": "FabricItem",
+          "alias": "",
+          "audienceType": "Fabric"
+        }
+      ],
+      "fabricProperties": {
+        "fabricMetadataSchemaVersion": "1.0",
+        "fabricFunctionReturnType": "Promise<{\n  workspaces: { id: string; displayName: string; capacityId?: string }[];\n  capacities: { id: string; displayName: string; sku: string }[];\n}>",
+        "fabricFunctionParameters": [
+          {
+            "name": "ctx",
+            "dataType": "RayfinContext<AppSchema, AudienceType.Fabric>",
+            "hasDefaultValue": false
+          }
+        ]
+      },
+      "functionCode": "udf.func('getLiveWorkspaces', async (ctx: RayfinContext<AppSchema, AudienceType.Fabric>): Promise<{\n  workspaces: { id: string; displayName: string; capacityId?: string }[];\n  capacities: { id: string; displayName: string; sku: string }[];\n}> => {\n  requireOwner(ctx.accessToken);\n  const reader = new FabricReader(ctx.Tokens.Fabric);\n  const workspaces = await reader.workspaces();\n  const capacities = await reader.capacities();\n  return { workspaces, capacities };\n}, [])"
+    },
+    {
+      "name": "syncFabricSchedules",
+      "scriptFile": "src\\function_app.ts",
+      "bindings": [
+        {
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "authLevel": "anonymous",
+          "methods": [
+            "post"
+          ],
+          "route": "syncFabricSchedules"
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        },
+        {
+          "name": "__generic_Fabric",
+          "direction": "in",
+          "type": "FabricItem",
+          "alias": "",
+          "audienceType": "Fabric"
+        }
+      ],
+      "fabricProperties": {
+        "fabricMetadataSchemaVersion": "1.0",
+        "fabricFunctionReturnType": "Promise<SyncResult>",
+        "fabricFunctionParameters": [
+          {
+            "name": "workspaceIds",
+            "dataType": "string[]",
+            "hasDefaultValue": false
+          },
+          {
+            "name": "cursor",
+            "dataType": "string",
+            "hasDefaultValue": false
+          },
+          {
+            "name": "ctx",
+            "dataType": "RayfinContext<AppSchema, AudienceType.Fabric>",
+            "hasDefaultValue": false
+          }
+        ]
+      },
+      "functionCode": "udf.func('syncFabricSchedules', async (\n  workspaceIds: string[], cursor: string, ctx: RayfinContext<AppSchema, AudienceType.Fabric>,\n): Promise<SyncResult> => {\n  requireOwner(ctx.accessToken);\n  return collectBatch(workspaceIds, cursor, ctx);\n}, [])"
+    },
+    {
+      "name": "getRunningNow",
+      "scriptFile": "src\\function_app.ts",
+      "bindings": [
+        {
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "authLevel": "anonymous",
+          "methods": [
+            "post"
+          ],
+          "route": "getRunningNow"
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        },
+        {
+          "name": "__generic_Fabric",
+          "direction": "in",
+          "type": "FabricItem",
+          "alias": "",
+          "audienceType": "Fabric"
+        }
+      ],
+      "fabricProperties": {
+        "fabricMetadataSchemaVersion": "1.0",
+        "fabricFunctionReturnType": "Promise<{ itemKey: string; runId: string; startUtc: string; status: string }[]>",
+        "fabricFunctionParameters": [
+          {
+            "name": "itemKeys",
+            "dataType": "string[]",
+            "hasDefaultValue": false
+          },
+          {
+            "name": "ctx",
+            "dataType": "RayfinContext<AppSchema, AudienceType.Fabric>",
+            "hasDefaultValue": false
+          }
+        ]
+      },
+      "functionCode": "udf.func('getRunningNow', async (\n  itemKeys: string[], ctx: RayfinContext<AppSchema, AudienceType.Fabric>,\n): Promise<{ itemKey: string; runId: string; startUtc: string; status: string }[]> => {\n  requireOwner(ctx.accessToken);\n  if (!Array.isArray(itemKeys) || itemKeys.length > 20 || itemKeys.some((key) => typeof key !== 'string' || key.length > 200)) {\n    throw new Error('Request at most 20 imported live items per running-status batch.');\n  }\n  const reader = new FabricReader(ctx.Tokens.Fabric);\n  const data = ctx.getDataClient();\n  const output: { itemKey: string; runId: string; startUtc: string; status: string }[] = [];\n  for (const itemKey of new Set(itemKeys)) {\n    const [item] = await data.ScheduledItem.select(['workspaceId', 'fabricItemId', 'jobType', 'source', 'itemType'])\n      .where({ id: { eq: stableId(`live:${itemKey}`) }, itemKey: { eq: itemKey } }).first(1).execute();\n    if (!item || item.source !== 'live' || !item.jobType || !jobs[item.itemType]) throw new Error('A requested item is not an imported supported live workload.');\n    const rows = normalizeRuns(await reader.list(`workspaces/${item.workspaceId}/items/${item.fabricItemId}/jobs/instances`), itemKey, item.jobType, Date.now());\n    output.push(...rows.filter((run) => run.status === 'InProgress').map((run) => ({\n      itemKey, runId: run.runId, startUtc: run.startUtc.toISOString(), status: run.status,\n    })));\n  }\n  return output;\n}, [])"
+    }
+  ]
+}

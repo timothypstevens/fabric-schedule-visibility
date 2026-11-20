@@ -1,0 +1,418 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+/* Bridged tokens — kept in `@theme static` so the CSS vars are always
+   emitted, not tree-shaken when no Tailwind utility consumes them.
+   Required because <VegaVisual> and <DataGrid> read these at runtime via
+   `useCssTheme()` and project them into a JS theme object (Vega's SVG output
+   cannot resolve `var()` references). */
+@theme static {
+  --color-brand: #117865; /* bar/area fills, button-like brand surfaces */
+  --color-brand-foreground: #117865; /* line/point marks, branded text & emphasis */
+  --color-hover: #f5f5f5; /* row/cell hover surface in DataGrid + visuals */
+  --color-type-semantic-model: #0072b2;
+  --color-type-dataflow-gen2: #e69f00;
+  --color-type-dataflow-gen1: #009e73;
+  --color-type-data-pipeline: #cc79a7;
+  --color-type-notebook: #56b4e9;
+  --color-type-spark-job-definition: #d55e00;
+  --color-type-copy-job: #f0e442;
+  --color-type-other: #767676;
+}
+
+@theme {
+  /* Color tokens — light theme
+     Usage: bg-*, text-*, border-* (e.g. bg-primary text-primary-foreground)
+     Each token has a -foreground pair for text on that surface. */
+  --color-background: #ffffff; /* page background */
+  --color-foreground: #242424; /* default text */
+
+  --color-card: #ffffff; /* card surfaces */
+  --color-card-foreground: #242424;
+
+  --color-popover: #ffffff; /* popover/dropdown surfaces */
+  --color-popover-foreground: #242424;
+
+  --color-primary: #117865; /* primary actions & buttons */
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #fafafa; /* secondary actions */
+  --color-secondary-foreground: #242424;
+
+  --color-muted: #f0f0f0; /* subtle backgrounds */
+  --color-muted-foreground: #616161; /* subdued text */
+
+  --color-accent: #f5f5f5; /* accent highlights */
+  --color-accent-foreground: #242424;
+
+  --color-destructive: #c50f1f; /* errors & destructive actions */
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #e0e0e0; /* default border */
+  --color-input: #e0e0e0; /* input field borders */
+  --color-ring: #117865; /* focus rings */
+
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 12px;
+  --radius-3xl: 16px;
+  --radius-4xl: 24px;
+  --radius-5xl: 32px;
+  --radius-6xl: 40px;
+  --radius-full: 9999px;
+  --radius: 6px;
+
+  /* Spacing — 4px grid; use only these tokens, no interpolation. *-nudge = base − 2px.
+     Usage: p-*, m-*, gap-* (e.g. p-400 gap-300) */
+  --spacing-none: 0;
+  --spacing-100-nudge: 2px;
+  --spacing-100: 4px;
+  --spacing-200-nudge: 6px;
+  --spacing-200: 8px;
+  --spacing-300-nudge: 10px;
+  --spacing-300: 12px;
+  --spacing-400: 16px;
+  --spacing-500: 20px;
+  --spacing-600: 24px;
+  --spacing-700: 28px;
+  --spacing-800: 32px;
+
+  /* Font Sizes — 100-based scale 
+     Usage: text-* (e.g. text-300, text-hero-900) */
+  --text-100: 10px;
+  --text-200: 12px;
+  --text-300: 14px;
+  --text-400: 16px;
+  --text-500: 20px;
+  --text-600: 24px;
+  --text-hero-700: 28px;
+  --text-hero-800: 32px;
+  --text-hero-900: 40px;
+  --text-hero-1000: 68px;
+
+  /* Line Heights — paired with font sizes
+     Usage: leading-* (e.g. leading-300) */
+  --leading-100: 14px;
+  --leading-200: 16px;
+  --leading-300: 20px;
+  --leading-400: 22px;
+  --leading-500: 28px;
+  --leading-600: 32px;
+  --leading-hero-700: 36px;
+  --leading-hero-800: 40px;
+  --leading-hero-900: 52px;
+  --leading-hero-1000: 92px;
+
+  /* Font Weights
+     Usage: font-* (e.g. font-semibold) */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Font Families
+     Usage: font-* (e.g. font-heading, font-base) */
+  --font-heading:
+    'Segoe UI', 'Segoe UI Web (West European)',
+    /* headings, titles, display text */ -apple-system, BlinkMacSystemFont,
+    Roboto, 'Helvetica Neue', sans-serif;
+  --font-base:
+    'Segoe UI', 'Segoe UI Web (West European)',
+    /* body text, labels, UI controls */ -apple-system, BlinkMacSystemFont,
+    Roboto, 'Helvetica Neue', sans-serif;
+  --font-monospace:
+    Consolas, 'Courier New', Courier, monospace; /* code, pre-formatted text */
+  --font-numeric:
+    Bahnschrift, 'Segoe UI',
+    /* KPI values, numeric displays */ 'Segoe UI Web (West European)',
+    -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+
+  /* Icon Sizes — 100-based scale
+     Usage: icon-size-* custom utility (e.g. icon-size-200) */
+  --icon-size-100: 12px;
+  --icon-size-200: 16px;
+  --icon-size-300: 20px;
+  --icon-size-400: 24px;
+  --icon-size-500: 28px;
+  --icon-size-600: 32px;
+  --icon-size-700: 48px;
+}
+
+@utility icon-size-* {
+  width: --value(--icon-size-*);
+  height: --value(--icon-size-*);
+}
+
+@layer base {
+  .dark {
+    /* Color tokens — dark theme */
+    --color-background: #292929;
+    --color-foreground: #ffffff;
+
+    --color-card: #292929;
+    --color-card-foreground: #ffffff;
+
+    --color-popover: #292929;
+    --color-popover-foreground: #ffffff;
+
+    --color-primary: #117865;
+    --color-primary-foreground: #ffffff;
+
+    --color-secondary: #1f1f1f;
+    --color-secondary-foreground: #ffffff;
+
+    --color-muted: #141414;
+    --color-muted-foreground: #adadad;
+
+    --color-accent: #3d3d3d;
+    --color-accent-foreground: #ffffff;
+
+    --color-destructive: #c50f1f;
+    --color-destructive-foreground: #ffffff;
+
+    --color-border: #525252;
+    --color-input: #525252;
+    --color-ring: #65cfb9;
+
+    --color-brand: #117865;
+    --color-brand-foreground: #65cfb9;
+    --color-hover: #3d3d3d;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+:root {
+  --scheduler-sidebar: 250px;
+  --scheduler-max: 1800px;
+  --scheduler-list-height: 590px;
+  --scheduler-strip-height: 260px;
+  --scheduler-gantt-height: 640px;
+  --scheduler-row-height: 50px;
+  --scheduler-control-height: 34px;
+  --color-canvas: #f5f7f8;
+  --color-warning-surface: #fff0e8;
+  --color-failure-surface: #fde7e9;
+  --color-failure-hover: #f9d1d6;
+  --color-failure-metric: #a4262c;
+}
+.dark {
+  --color-canvas: #202625;
+  --color-warning-surface: #493328;
+  --color-failure-surface: #48262b;
+  --color-failure-hover: #5c3037;
+  --color-failure-metric: #ffb3bb;
+}
+.scheduler-app {
+  min-height: 100vh;
+  background: var(--color-canvas);
+  color: var(--color-foreground);
+  font: var(--text-300)/var(--leading-400) var(--font-base);
+}
+.scheduler-app h1 { font-size: var(--text-hero-700); line-height: var(--leading-hero-700); font-weight: 600; }
+.scheduler-app h2 { font-size: var(--text-500); font-weight: 600; }
+.scheduler-app h3 { font-size: var(--text-400); font-weight: 600; margin-block: var(--spacing-400); }
+.scheduler-app p { margin-block: var(--spacing-300); }
+.app-header, .command-bar, .header-actions, .app-brand, .view-toolbar, .section-heading, .button-row, .admin-actions, .safety-note {
+  display: flex; align-items: center; gap: var(--spacing-300);
+}
+.app-header { background: var(--color-card); padding: var(--spacing-500) var(--spacing-600); justify-content: space-between; border-top: var(--spacing-100) solid var(--color-primary); }
+.app-header .eyebrow { margin: 0; }
+.app-brand { gap: var(--spacing-400); }
+.brand-icon { width: var(--icon-size-700); height: var(--icon-size-700); color: var(--color-primary); }
+.eyebrow { font-size: var(--text-200); letter-spacing: 0.1em; font-weight: 600; color: var(--color-primary); }
+.command-bar { grid-area: controls; min-width: 0; padding: var(--spacing-500); border-bottom: 1px solid var(--color-border); background: var(--color-card); flex-wrap: wrap; align-items: end; }
+.command-bar input[type="date"], .command-bar select, .command-bar > button { box-sizing: border-box; height: var(--scheduler-control-height); }
+.scheduler-app label, .detail-dialog label { display: flex; flex-direction: column; gap: var(--spacing-100); font-size: var(--text-200); font-weight: 600; }
+.scheduler-app input:not([type="checkbox"]), .scheduler-app select, .detail-dialog input, .detail-dialog select, .detail-dialog textarea {
+  border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-card);
+  color: var(--color-foreground); padding: var(--spacing-200-nudge) var(--spacing-200);
+  min-height: var(--scheduler-control-height); font: inherit; font-size: var(--text-300); min-width: 0; width: 100%;
+}
+input, select, textarea, button { font-family: inherit; }
+.scheduler-app button:focus-visible, .scheduler-app input:focus-visible, .scheduler-app select:focus-visible, .detail-dialog :focus-visible {
+  outline: 2px solid var(--color-ring); outline-offset: 2px;
+}
+.scheduler-app .check-label { flex-direction: row; align-items: center; gap: var(--spacing-200); font-size: var(--text-300); font-weight: 400; }
+.check-label input { accent-color: var(--color-primary); }
+.command-bar .check-label { padding-block: var(--spacing-200); }
+.command-bar label:has(select[aria-label="Display time zone"]) { max-width: 240px; min-width: 0; }
+.last-updated { margin-left: auto; font-size: var(--text-200); color: var(--color-muted-foreground); padding-block: var(--spacing-200); }
+.workspace-layout { display: grid; grid-template-columns: var(--scheduler-sidebar) minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "filters controls" "filters content"; max-width: var(--scheduler-max); margin: auto; border-top: 1px solid var(--color-border); }
+.workspace-layout.filters-collapsed { grid-template-columns: 48px minmax(0, 1fr); }
+.filter-drawer, .filter-rail { grid-area: filters; min-width: 0; background: var(--color-card); border-right: 1px solid var(--color-border); }
+.filter-drawer[hidden] { display: none; }
+.filter-rail { padding-top: var(--spacing-500); text-align: center; }
+.filter-pane { min-width: 0; padding: var(--spacing-500); }
+.filter-pane > label { margin-block: var(--spacing-400); }
+.filter-field { display: flex; flex-direction: column; min-width: 0; gap: var(--spacing-100); margin-block: var(--spacing-400); }
+.filter-field > [role="combobox"], .filter-field > div { min-width: 0; width: 100%; }
+.filter-field button[role="combobox"] { min-width: 0; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.filter-clear { align-self: flex-end; }
+.filter-pane .section-heading { justify-content: space-between; }
+.section-heading h2 { font-size: var(--text-400); }
+.secondary-text, small { color: var(--color-muted-foreground); }
+.secondary-text { font-size: var(--text-200); }
+fieldset { border: 0; padding: 0; margin-block: var(--spacing-400); }
+legend { font-size: var(--text-200); font-weight: 600; margin-bottom: var(--spacing-200); }
+.time-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: var(--spacing-200); margin-block: var(--spacing-400); }
+.time-pair > label { min-width: 0; }
+.filter-pane input, .filter-pane select { max-width: 100%; }
+.saved-views { border-top: 1px solid var(--color-border); margin-top: var(--spacing-600); padding-top: var(--spacing-200); }
+.saved-views label { margin-bottom: var(--spacing-300); }
+.main-panel { grid-area: content; min-width: 0; padding: var(--spacing-500); }
+.safety-note { color: var(--color-muted-foreground); font-size: var(--text-200); margin-bottom: var(--spacing-400); }
+.safety-note svg { flex-shrink: 0; }
+.badge { border: 1px solid var(--color-border); border-radius: var(--radius-full); padding: var(--spacing-100) var(--spacing-300); font-size: var(--text-200); font-weight: 600; white-space: nowrap; }
+.sample-badge { border-color: var(--color-primary); color: var(--color-primary); }
+.metrics-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--spacing-300); margin-bottom: var(--spacing-500); }
+.metrics-strip article { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--spacing-400); display: flex; flex-direction: column; gap: var(--spacing-200); }
+.metrics-strip article > span { font-size: var(--text-200); font-weight: 600; }
+.metrics-strip .metric-heading { justify-content: space-between; }
+.metrics-strip article > strong { font-family: var(--font-numeric); font-size: var(--text-hero-800); line-height: var(--leading-hero-800); }
+.metrics-strip strong small { font-size: var(--text-400); font-weight: 400; }
+.metrics-strip article.metric-warning { background: var(--color-warning-surface); border-color: var(--color-type-spark-job-definition); }
+.tabs-toolbar { display: flex; justify-content: space-between; gap: var(--spacing-300); align-items: center; background: var(--color-card); border: 1px solid var(--color-border); border-bottom: 0; padding: var(--spacing-200); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.tabs-toolbar > label { flex-direction: row; align-items: center; }
+.view-panel { min-height: 400px; background: var(--color-card); padding: var(--spacing-400); border: 1px solid var(--color-border); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.view-toolbar { flex-wrap: wrap; justify-content: space-between; margin-block: var(--spacing-300); }
+.view-toolbar label { min-width: 100px; }
+.view-toolbar input[type="number"] { max-width: 150px; }
+.timeline-zoom, .timeline-limit { display: flex; flex-direction: column; gap: var(--spacing-100); }
+.timeline-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-400); margin-bottom: var(--spacing-400); }
+.timeline-heading { flex: 1 1 280px; }
+.timeline-heading h2 { font-size: var(--text-400); font-weight: 600; }
+.timeline-heading p { margin-top: var(--spacing-100); }
+.timeline-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--spacing-400); padding: var(--spacing-300) var(--spacing-400); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-canvas); }
+.timeline-controls .timeline-zoom { justify-content: flex-end; min-height: var(--scheduler-control-height); }
+.timeline-controls .zoom-buttons button { height: var(--scheduler-control-height); min-width: 48px; }
+.timeline-controls label { width: 100px; }
+.timeline-controls .timeline-limit { border-left: 1px solid var(--color-border); padding-left: var(--spacing-400); }
+.timeline-controls .metric-heading { font-size: var(--text-200); font-weight: 600; min-height: 24px; }
+.timeline-controls .timeline-limit strong { display: flex; align-items: center; min-height: var(--scheduler-control-height); line-height: 1; }
+.zoom-buttons { display: inline-flex; }
+.zoom-buttons button { border-radius: 0; }
+.zoom-buttons button:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.zoom-buttons button:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.timeline-limit strong { font-family: var(--font-numeric); font-size: var(--text-500); }
+.view-toolbar > span { color: var(--color-muted-foreground); font-size: var(--text-200); }
+.app-footer { padding-block: var(--spacing-400); color: var(--color-muted-foreground); font-size: var(--text-200); }
+.schedule-table { overflow: auto; }
+.schedule-columns { display: grid; grid-template-columns: 2fr 1.6fr 1fr 1fr 0.8fr 1fr 1fr; gap: var(--spacing-300); align-items: center; min-width: 1050px; }
+.table-head { padding: var(--spacing-300); font-size: var(--text-200); color: var(--color-muted-foreground); background: var(--color-muted); font-weight: 600; }
+.schedule-scroll { height: var(--scheduler-list-height); min-width: 1050px; overflow: auto; position: relative; }
+.virtual-row { position: absolute; top: 0; left: 0; width: 100%; }
+.item-row { position: relative; width: 100%; height: 100%; padding: var(--spacing-200) var(--spacing-300) var(--spacing-200) var(--spacing-400); text-align: left; border: 0; border-bottom: 1px solid var(--color-border); background: var(--color-card); cursor: pointer; font-size: var(--text-200); }
+.item-row strong { font-weight: 600; }
+.item-row span, .running-row span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-row:hover, .running-row:hover { background: var(--color-hover); }
+.item-row-failed { background: var(--color-failure-surface); }
+.item-row-failed:hover { background: var(--color-failure-hover); }
+.item-row small, .running-row small { display: block; font-size: var(--text-200); }
+.schedule-help { color: var(--color-muted-foreground); font-size: var(--text-200); margin-bottom: var(--spacing-300); }
+.schedule-toolbar .schedule-help { margin-bottom: 0; }
+.metric-heading { display: flex; align-items: center; gap: var(--spacing-100); }
+.schedule-info { max-width: min(360px, calc(100vw - 32px)); font-size: var(--text-300); }
+.schedule-info h3 { font-weight: 600; }
+.schedule-info p + p { margin-top: var(--spacing-200); }
+.hour-group { display: flex; gap: var(--spacing-200); align-items: center; width: 100%; height: 100%; border: 0; text-align: left; cursor: pointer; background: var(--color-muted); padding: var(--spacing-300); font-weight: 600; }
+.hour-group:focus-visible { outline: 2px solid var(--color-ring); outline-offset: -2px; }
+.hour-group > span { margin-left: auto; }
+.hour-hot { background: var(--color-warning-surface); border-left: var(--spacing-100) solid var(--color-type-spark-job-definition); }
+.hour-group span { font-weight: 400; font-size: var(--text-200); }
+.empty-message { padding: var(--spacing-800); text-align: center; color: var(--color-muted-foreground); }
+.empty-state { text-align: center; padding: var(--spacing-800); max-width: 650px; margin: auto; }
+.empty-state svg { margin: var(--spacing-600) auto; color: var(--color-primary); }
+.empty-state button { margin: var(--spacing-400); }
+.error-banner, .success-banner { border: 1px solid var(--color-border); padding: var(--spacing-300); border-left: var(--spacing-100) solid var(--color-destructive); margin-block: var(--spacing-300); overflow-wrap: anywhere; }
+.error-banner { color: var(--color-destructive); }
+.success-banner { border-left-color: var(--color-primary); }
+.error-banner button { margin-left: var(--spacing-300); }
+.failure-text { color: var(--color-destructive); font-weight: 600; }
+.item-row .failure-metric { display: inline-flex; align-items: center; gap: var(--spacing-100); color: var(--color-failure-metric); font-weight: 700; }
+.item-row .failure-metric-neutral { color: inherit; }
+.failure-metric svg { flex-shrink: 0; }
+.failure-zero { color: var(--color-muted-foreground); }
+.concurrency-chart { height: var(--scheduler-strip-height); width: 100%; }
+.gantt-chart { height: var(--scheduler-gantt-height); width: 100%; }
+.gantt-panel { margin-top: var(--spacing-500); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; }
+.gantt-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-300); padding: var(--spacing-400); }
+.gantt-heading h3 { font-size: var(--text-400); font-weight: 600; }
+.gantt-heading p { margin-top: var(--spacing-100); }
+.gantt-heading select { max-width: 100%; }
+.gantt-scroll { overflow-x: auto; }
+.gantt-scroll .gantt-chart { min-width: 760px; }
+.running-list { overflow: auto; max-height: var(--scheduler-list-height); }
+.running-table { width: 100%; min-width: 850px; border-collapse: collapse; table-layout: fixed; text-align: left; font-size: var(--text-300); }
+.running-table th, .running-table td { padding: var(--spacing-400); border-bottom: 1px solid var(--color-border); overflow-wrap: anywhere; }
+.running-table th { position: sticky; top: 0; z-index: 1; background: var(--color-card); font-weight: 600; }
+.running-table th:first-child { width: 34%; }
+.running-table th:nth-child(2) { width: 23%; }
+.running-table th:nth-child(3) { width: 20%; }
+.running-row { background: var(--color-card); cursor: pointer; }
+.running-row td:first-child { position: relative; }
+.item-type-stripe { position: absolute; inset: 0 auto 0 0; width: 6px; cursor: help; }
+.item-type-stripe:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 1px; }
+.item-type-legend { max-width: 290px; font-size: var(--text-200); }
+.item-type-legend > div { display: flex; align-items: center; gap: var(--spacing-200); margin-top: var(--spacing-100); }
+.item-type-legend i { width: 12px; height: 12px; flex-shrink: 0; border: 1px solid currentColor; }
+.running-item-button { text-align: left; color: inherit; background: transparent; border: 0; cursor: pointer; }
+.slot-controls { display: flex; flex-wrap: wrap; gap: var(--spacing-400); margin-block: var(--spacing-500); }
+.day-picker { display: flex; flex-wrap: wrap; gap: var(--spacing-400); }
+.day-picker legend { margin-bottom: var(--spacing-400); }
+.slot-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-400); margin-top: var(--spacing-600); }
+.slot-card { padding: var(--spacing-500); border: 1px solid var(--color-border); border-top: var(--spacing-100) solid var(--color-primary); border-radius: var(--radius-lg); }
+.slot-peak-toggle { color: var(--color-primary); font-weight: 600; text-align: left; text-decoration: underline; cursor: pointer; margin-block: var(--spacing-200); }
+.slot-peak-jobs { margin-top: var(--spacing-300); max-height: 360px; overflow: auto; }
+.slot-peak-jobs h4 { font-weight: 600; margin-top: var(--spacing-300); }
+.slot-peak-jobs ul { padding-left: var(--spacing-400); list-style: disc; }
+.slot-peak-jobs li { margin-block: var(--spacing-200); overflow-wrap: anywhere; }
+.slot-peak-jobs small { display: block; color: var(--color-muted-foreground); }
+.admin-actions { flex-wrap: wrap; margin-block: var(--spacing-600); }
+.admin-status { padding: var(--spacing-500); border: 1px solid var(--color-border); background: var(--color-canvas); margin-block: var(--spacing-600); }
+.admin-status button { margin-left: var(--spacing-300); }
+.load-progress { max-width: 600px; }
+.detail-dialog label { margin-block: var(--spacing-300); }
+.detail-dialog p { margin-block: var(--spacing-300); }
+.detail-dialog h3 { font-size: var(--text-400); font-weight: 600; margin-block: var(--spacing-400); }
+.run-history { padding-left: var(--spacing-500); font-size: var(--text-200); }
+.run-history li { margin-block: var(--spacing-200); }
+.run-history span { margin-left: var(--spacing-300); }
+.run-history small { display: block; }
+@media (max-width: 1150px) {
+  .workspace-layout { grid-template-columns: 210px minmax(0, 1fr); }
+  .metrics-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tabs-toolbar { flex-wrap: wrap; }
+  .slot-results { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .workspace-layout { display: block; position: relative; }
+  .filter-drawer { position: absolute; inset: 0 auto 0 0; width: min(280px, calc(100vw - 48px)); z-index: 3; box-shadow: 4px 0 12px #0002; }
+  .filter-rail { position: absolute; top: 0; left: 0; width: 48px; border-right: 0; }
+  .filter-pane > label, .time-pair { max-width: 100%; }
+  .app-header { align-items: start; padding: var(--spacing-400); flex-wrap: wrap; gap: var(--spacing-400); }
+  .scheduler-app h1 { font-size: var(--text-500); line-height: var(--leading-500); }
+  .command-bar, .main-panel { padding: var(--spacing-300); }
+  .command-bar { padding-left: 60px; }
+  .last-updated { margin-left: 0; }
+  .tabs-toolbar > div { max-width: 100%; overflow: auto; }
+  .header-actions { margin-left: auto; }
+}

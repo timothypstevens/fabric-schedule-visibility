@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "2.0",
+  "functions": [
+    {
+      "functionName": "helloWorld",
+      "delegateParameters": [
+        {
+          "name": "firstName",
+          "type": "string",
+          "optional": false,
+          "hasDefault": false,
+          "position": 0,
+          "isFabricParameter": false
+        },
+        {
+          "name": "lastName",
+          "type": "string",
+          "optional": false,
+          "hasDefault": false,
+          "position": 1,
+          "isFabricParameter": false
+        }
+      ],
+      "contextAudiences": []
+    },
+    {
+      "functionName": "getLiveWorkspaces",
+      "delegateParameters": [
+        {
+          "name": "ctx",
+          "type": "RayfinContext<AppSchema, AudienceType.Fabric>",
+          "optional": false,
+          "hasDefault": false,
+          "position": 0,
+          "isFabricParameter": false
+        }
+      ],
+      "contextAudiences": [
+        "Fabric"
+      ]
+    },
+    {
+      "functionName": "syncFabricSchedules",
+      "delegateParameters": [
+        {
+          "name": "workspaceIds",
+          "type": "string[]",
+          "optional": false,
+          "hasDefault": false,
+          "position": 0,
+          "isFabricParameter": false
+        },
+        {
+          "name": "cursor",
+          "type": "string",
+          "optional": false,
+          "hasDefault": false,
+          "position": 1,
+          "isFabricParameter": false
+        },
+        {
+          "name": "ctx",
+          "type": "RayfinContext<AppSchema, AudienceType.Fabric>",
+          "optional": false,
+          "hasDefault": false,
+          "position": 2,
+          "isFabricParameter": false
+        }
+      ],
+      "contextAudiences": [
+        "Fabric"
+      ]
+    },
+    {
+      "functionName": "getRunningNow",
+      "delegateParameters": [
+        {
+          "name": "itemKeys",
+          "type": "string[]",
+          "optional": false,
+          "hasDefault": false,
+          "position": 0,
+          "isFabricParameter": false
+        },
+        {
+          "name": "ctx",
+          "type": "RayfinContext<AppSchema, AudienceType.Fabric>",
+          "optional": false,
+          "hasDefault": false,
+          "position": 1,
+          "isFabricParameter": false
+        }
+      ],
+      "contextAudiences": [
+        "Fabric"
+      ]
+    }
+  ]
+}
